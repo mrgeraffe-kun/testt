@@ -25,7 +25,6 @@
     "dev": "cross-env npm run build:server && medusa develop"
   },
   "dependencies": {
-    "@medusajs/admin": "^7.1.15",
     "@medusajs/cache-inmemory": "1.8.11",
     "@medusajs/cache-redis": "^1.9.2",
     "@medusajs/event-bus-local": "1.9.9",
