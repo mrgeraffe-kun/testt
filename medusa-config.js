@@ -45,16 +45,56 @@ const plugins = [
             secure: true,
         },
     },
+    {
+        resolve: `medusa-plugin-algolia`,
+        options: {
+            applicationId: process.env.ALGOLIA_APP_ID,
+            adminApiKey: process.env.ALGOLIA_ADMIN_API_KEY,
+            settings: {
+                products: {
+                    indexSettings: {
+                        searchableAttributes: ["title", "description"],
+                        attributesToRetrieve: [
+                            "id",
+                            "title",
+                            "description",
+                            "handle",
+                            "thumbnail",
+                            "variants",
+                            "variant_sku",
+                            "options",
+                            "collection_title",
+                            "collection_handle",
+                            "images",
+                        ],
+                    },
+                    transformer: (product) => ({
+                        objectID: product.id,
+                    })
+                },
+            },
+        },
+    },
+    {
+        resolve: "@medusajs/admin",
+        /** @type {import('@medusajs/admin').PluginOptions} */
+        options: {
+            autoRebuild: true,
+            develop: {
+                open: process.env.OPEN_BROWSER !== "false",
+            },
+        },
+    },
 ];
 
 const modules = {
-    eventBus: {
+    /*eventBus: {
       resolve: "@medusajs/event-bus-redis",
       options: {
         redisUrl: REDIS_URL
       }
     },
-    /*cacheService: {
+    cacheService: {
       resolve: "@medusajs/cache-redis",
       options: {
         redisUrl: REDIS_URL
@@ -70,7 +110,7 @@ const projectConfig = {
     database_url: DATABASE_URL,
     admin_cors: ADMIN_CORS,
     // Uncomment the following lines to enable REDIS
-    redis_url: REDIS_URL,
+    // redis_url: REDIS_URL,
     database_extra: process.env.NODE_ENV !== "development" ?
         {
             ssl: {
