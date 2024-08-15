@@ -22,10 +22,11 @@ export const POST = async (
     req: MedusaRequest,
     res: MedusaResponse
 ) => {
+    const amount = req.body["amount"];
     var instance = new Razorpay({ key_id: process.env.RAZORPAY_TEST_KEY, key_secret: process.env.RAZORPAY_TEST_KEY_SECRET })
 
     var options = {
-        amount: 50000,  // amount in the smallest currency unit
+        amount: amount * 100,  // amount in the smallest currency unit
         currency: "INR",
         receipt: "order_rcptid_11"
     };
