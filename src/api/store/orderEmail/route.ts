@@ -21,10 +21,15 @@ export const POST = async (
     req: MedusaRequest,
     res: MedusaResponse
 ) => {
+    const extractedItems = req.body["items"].map(item => ({
+        quantity: item.quantity,
+        title: item.title,
+        subtotal: (item.subtotal/100).toFixed(2)
+    }));
     let mailDetails =
         {
             "user": {
-              "orderHistory": req.body["items"]
+              "orderHistory": extractedItems
             },
             "name":req.body["name"],
             "address": req.body["address"],
@@ -37,12 +42,22 @@ export const POST = async (
             "total": req.body["total"],
             "date": req.body["date"]
           }
-          console.log(mailDetails, "HERE");
+          console.log(mailDetails);
         await sgMail.send({
             templateId: process.env.SENDGRID_ORDER_ID || "",
             from: process.env.SENDGRID_FROM || "",
             to: req.body["email"],
             dynamicTemplateData: mailDetails
-        });
+        }).then((response) => {
+            console.log(response[0].statusCode)
+            console.log(response[0].headers)
+          })
+          .catch((error) => {
+            console.error('Error sending test email');
+            console.error(error);
+            if (error.response) {
+              console.error(error.response.body)
+            }
+          });
     res.json({ message: "Order email Sent" });
 }
