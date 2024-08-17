@@ -23,7 +23,7 @@ export const POST = async (
 ) => {
     const extractedItems = req.body["items"].map(item => ({
         quantity: item.quantity,
-        title: item.title,
+        name: item.title,
         subtotal: (item.subtotal/100).toFixed(2)
     }));
     let mailDetails =
