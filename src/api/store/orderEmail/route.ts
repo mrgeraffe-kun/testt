@@ -31,7 +31,7 @@ export const POST = async (
             "user": {
               "orderHistory": extractedItems
             },
-            "name":req.body["name"],
+            "username":req.body["name"],
             "address": req.body["address"],
             "deliverymethod": "Standard",
             "paymentMode": "Online",
