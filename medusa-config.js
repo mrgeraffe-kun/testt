@@ -45,6 +45,13 @@ const plugins = [
             secure: true,
         },
     },
+    {
+        resolve: "@medusajs/admin",
+        /** @type {import('@medusajs/admin').PluginOptions} */
+        options: {
+            serve: process.env.NODE_ENV === "development",
+        },
+    },
 ];
 
 const modules = {
