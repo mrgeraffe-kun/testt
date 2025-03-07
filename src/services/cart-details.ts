@@ -39,6 +39,27 @@ class CartDetailsService extends TransactionBaseService {
           return "Cart Saved";
     }
 
+    async deleteCart(
+        email: string,
+    ): Promise<String> {
+        const cartsRepo = this.activeManager_.getRepository(
+            CartDetails
+        )
+
+        const cartExists = await cartsRepo.findOne({
+            where: {
+              email: email,
+            },
+        })
+
+        if (cartExists) {
+            await cartsRepo.delete(cartExists.id);
+            return "Cart Deleted Successfully";
+        } else {
+            return "Cart Not Found";
+        }
+    }
+
 }
 
 export default CartDetailsService
