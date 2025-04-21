@@ -2,95 +2,62 @@ import {
     TransactionBaseService
 } from "@medusajs/medusa"
 import { Wishlist } from "../models/wishlist"
-
 class WishlistService extends TransactionBaseService {
-    async getWishlist(
-        email: string,
-    ): Promise<String[]> {
-        const wishlistRepo = this.activeManager_.getRepository(
-            Wishlist
-          )
-
-        const wishlist = await wishlistRepo.findOne({
-            where: {
-              email: email,
-            },
-          })
-        if (wishlist) {
-            return wishlist.productIds;
-        }
-        else{
-            return [];
-        }
+    async getWishlist(email: string): Promise<string[]> {
+        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
+        const wishlist = await wishlistRepo.findOne({ where: { email } });
+        return wishlist ? wishlist.productIds : [];
     }
 
     async create(productId: string, email: string): Promise<string[]> {
-        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
-
-        // Find existing wishlist for the email
-        let wishlist = await wishlistRepo.findOne({
-            where: { email },
-        });
-
-        // If wishlist does not exist, create a new one
-        if (!wishlist) {
-            wishlist = new Wishlist();
-            wishlist.email = email;
-            wishlist.productIds = [];
+        if (!productId || !email) {
+            throw new Error("Product ID and email are required");
         }
 
-        // Ensure unique product IDs using a Set
-        const uniqueProductIds = new Set([...wishlist.productIds, productId]);
-        wishlist.productIds = Array.from(uniqueProductIds);
+        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
+        let wishlist = await wishlistRepo.findOne({ where: { email } });
 
-        // Save the updated wishlist
+        if (!wishlist) {
+            wishlist = wishlistRepo.create({ email, productIds: [] });
+        }
+
+        wishlist.productIds = Array.from(new Set([...wishlist.productIds, productId]));
         await wishlistRepo.save(wishlist);
 
         return wishlist.productIds;
     }
 
-    async removeProduct(productId: string, email: string): Promise<String[]> {
-        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
+    async removeProduct(productId: string, email: string): Promise<string[]> {
+        if (!productId || !email) {
+            throw new Error("Product ID and email are required");
+        }
 
-        const wishlist = await wishlistRepo.findOne({
-            where: {
-                email: email,
-            },
-        });
+        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
+        const wishlist = await wishlistRepo.findOne({ where: { email } });
 
         if (wishlist) {
-            wishlist.productIds = wishlist.productIds.filter(
-                (id) => id !== productId
-            );
-
+            wishlist.productIds = wishlist.productIds.filter((id) => id !== productId);
             await wishlistRepo.save(wishlist);
-            return wishlist.productIds;
-        } else {
-            return [];
         }
+
+        return wishlist ? wishlist.productIds : [];
     }
 
     async removeAllProducts(email: string): Promise<string[]> {
-        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
+        if (!email) {
+            throw new Error("Email is required");
+        }
 
-        const wishlist = await wishlistRepo.findOne({
-            where: {
-                email: email,
-            },
-        });
+        const wishlistRepo = this.activeManager_.getRepository(Wishlist);
+        const wishlist = await wishlistRepo.findOne({ where: { email } });
 
         if (wishlist) {
             wishlist.productIds = [];
-
             await wishlistRepo.save(wishlist);
-            return wishlist.productIds;
-        } else {
-            return [];
         }
+
+        return wishlist ? wishlist.productIds : [];
     }
-
-
-
 }
 
 export default WishlistService

@@ -12,17 +12,13 @@ export const POST = async (
 ) => {
     try {
         const affiliateId = req.body["affiliateId"];
-        const productHandle = req.body["productHandle"];
-        const orderId = req.body["orderId"];
-        const amount = req.body["totalPrice"];
-
 
         const couponDetailsService = req.scope.resolve("couponDetailsService")
-        const result = await couponDetailsService.updatePurchases(affiliateId, productHandle,orderId,amount);
+        const result = await couponDetailsService.getCouponDetails(affiliateId);
         return res.json({ message: result });
     } catch (error) {
         return res.status(500).json({
-            message: "Failed to update visits",
+            message: "Failed to get affiliate coupon details",
             error: error.message
         });
     }

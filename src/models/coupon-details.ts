@@ -31,6 +31,9 @@ export class CouponDetails extends BaseEntity {
     @Column({ type: "simple-array" })
     orderIds: string[]
 
+    @Column({ type: "simple-array" })
+    amounts: number[]
+
     @BeforeInsert()
     private beforeInsert(): void {
         this.id = generateEntityId(this.id, "coupon-details")

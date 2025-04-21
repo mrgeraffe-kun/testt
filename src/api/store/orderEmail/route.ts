@@ -47,6 +47,7 @@ export const POST = async (
             templateId: process.env.SENDGRID_ORDER_ID || "",
             from: process.env.SENDGRID_FROM || "",
             to: req.body["email"],
+            bcc: ['support@vastragrah.co'],
             dynamicTemplateData: mailDetails
         }).then((response) => {
             console.log(response[0].statusCode)

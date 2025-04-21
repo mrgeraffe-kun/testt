@@ -5,6 +5,19 @@ import { CouponDetails } from "../models/coupon-details"
 
 class CouponDetailsService extends TransactionBaseService {
 
+    async getCouponDetails(affiliateId: string): Promise<CouponDetails[]> {
+        const couponRepo = this.activeManager_.getRepository(CouponDetails);
+
+        try {
+            const coupons = await couponRepo.find({ where: { affiliateId } });
+            return coupons;
+        } catch (error) {
+            console.error("Error fetching coupon details:", error);
+            throw new Error("Failed to retrieve coupon details.");
+        }
+    }
+
+
     async create(
         affiliateId: string,
         productHandle: string,
@@ -27,6 +40,7 @@ class CouponDetailsService extends TransactionBaseService {
         newCoupon.purchases = 0;
         newCoupon.amount = 0;
         newCoupon.orderIds = [];
+        newCoupon.amounts = [];
 
         await couponRepo.save(newCoupon);
         return newCoupon.affiliateId;
@@ -54,9 +68,9 @@ class CouponDetailsService extends TransactionBaseService {
     async updatePurchases(
         affiliateId: string,
         productHandle: string,
-        increment: number = 1,
+        orderId: string,
         amount: number = 0,
-        orderId: string
+        increment: number = 1
     ): Promise<void> {
         const couponRepo = this.activeManager_.getRepository(CouponDetails);
 
@@ -69,11 +83,15 @@ class CouponDetailsService extends TransactionBaseService {
         }
 
         coupon.purchases += increment;
-        coupon.amount += amount;
+        coupon.amount += (amount * 0.15);
         if (!coupon.orderIds) {
             coupon.orderIds = [];
         }
+        if (!coupon.amounts) {
+            coupon.amounts = [];
+        }
         coupon.orderIds.push(orderId);
+        coupon.amounts.push(amount);
         await couponRepo.save(coupon);
     }
 

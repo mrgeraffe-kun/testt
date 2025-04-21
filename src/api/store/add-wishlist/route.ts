@@ -1,10 +1,10 @@
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
 import {
     type MedusaRequest,
     type MedusaResponse,
-} from "@medusajs/medusa"
+} from "@medusajs/medusa";
 
 export const POST = async (
     req: MedusaRequest,
@@ -12,7 +12,21 @@ export const POST = async (
 ) => {
     const email = req.body["email"];
     const productId = req.body["productId"];
-    const wishlistService = req.scope.resolve("wishlistService")
-    let result = await wishlistService.create(productId, email);
-    res.json({ message: result });
+
+    if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: "Email is required and must be a string." });
+    }
+    if (!productId || typeof productId !== 'string') {
+        return res.status(400).json({ error: "Product ID is required and must be a string." });
+    }
+
+    const wishlistService = req.scope.resolve("wishlistService");
+
+    try {
+        const result = await wishlistService.create(productId, email);
+        res.json({ success: true, message: result });
+    } catch (error) {
+        console.error("Error adding product to wishlist:", error);
+        res.status(500).json({ error: "Failed to add product to wishlist." });
+    }
 }
