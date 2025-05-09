@@ -45,7 +45,7 @@
     "medusa-plugin-algolia": "^0.2.21",
     "prism-react-renderer": "^2.0.4",
     "razorpay": "^2.9.4",
-    "typeorm": "0.3.16"
+    "typeorm": "0.3.20"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
